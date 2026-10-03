@@ -1,0 +1,939 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.nav-link');
+    const contents = document.querySelectorAll('.tab-content');
+    const transitionOverlay = document.getElementById('page-transition');
+    const animationToggle = document.getElementById('animation-toggle');
+    let animationsEnabled = localStorage.getItem('tabAnimations') !== 'false';
+    let twitchEmbed = null;
+    let liveStandingsInterval = null;
+
+    function updateAnimationToggle() {
+        animationToggle.textContent = `Animations: ${animationsEnabled ? 'ON' : 'OFF'}`;
+        if (!animationsEnabled) {
+            document.body.classList.add('no-animations');
+        } else {
+            document.body.classList.remove('no-animations');
+        }
+    }
+
+    animationToggle.addEventListener('click', () => {
+        animationsEnabled = !animationsEnabled;
+        localStorage.setItem('tabAnimations', animationsEnabled);
+        updateAnimationToggle();
+    });
+
+    updateAnimationToggle();
+    triggerTransition();
+    
+    initTitleTypewriter();
+    initGameModals();
+    initPlayers();
+    initPreviousEvents();
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-tab');
+            if (!tab.classList.contains('active')) {
+                triggerTransition(() => switchTab(target));
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-tab-switch]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = btn.getAttribute('data-tab-switch');
+            triggerTransition(() => switchTab(target));
+        });
+    });
+
+    function triggerTransition(callback = null) {
+        if (!animationsEnabled) {
+            if (callback) callback();
+            return;
+        }
+
+        transitionOverlay.classList.add('active');
+        document.body.classList.add('loading');
+
+        setTimeout(() => {
+            if (callback) callback();
+        }, 500);
+
+        setTimeout(() => {
+            transitionOverlay.classList.remove('active');
+            document.body.classList.remove('loading');
+        }, 1200);
+    }
+
+    function switchTab(target) {
+        tabs.forEach(t => {
+            if (t.getAttribute('data-tab') === target) {
+                t.classList.add('active');
+            } else {
+                t.classList.remove('active');
+            }
+        });
+
+        contents.forEach(c => {
+            if (c.getAttribute('id') === target) {
+                c.classList.add('active');
+            } else {
+                c.classList.remove('active');
+            }
+        });
+
+        if (liveStandingsInterval) {
+            clearInterval(liveStandingsInterval);
+            liveStandingsInterval = null;
+        }
+
+        if (target === 'live') {
+            if (!twitchEmbed) {
+                initTwitch();
+            }
+            updateLiveStandings();
+            liveStandingsInterval = setInterval(updateLiveStandings, 30000);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initGameModals() {
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalDesc = document.getElementById('modal-description');
+        const closeBtn = document.querySelector('.close-modal');
+        const gameCards = document.querySelectorAll('.game-card');
+        const galleryImages = document.querySelectorAll('.gallery-img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeLightbox = document.querySelector('.close-lightbox');
+
+        const descriptions = {
+            'capture-the-flag': `
+                <p>Two teams will be placed in a court, first one to collect the banner on the opposite side and deliver it to their own banner wins! After all teams have played each other, the game ends (So get them points!)</p>
+                <p><strong>Classes:</strong></p>
+                <ul>
+                    <li><strong>Assassin:</strong> Iron sword, no armor.</li>
+                    <li><strong>Knight:</strong> Leather boots and chestplate, stone sword.</li>
+                    <li><strong>Arbalist:</strong> Leather pants, wooden sword, crossbow (1 slowness arrow, 8 regular arrows).</li>
+                    <li><strong>Archer:</strong> Wooden sword, leather boots and tunic, bow, 16 arrows.</li>
+                    <li><strong>Potioneer:</strong> 2 healing pots, 1 harming pot, wooden sword, leather boots and chestplate.</li>
+                </ul>
+                <p>Only one of each class may be selected on a team, so best that you coordinate!</p>
+            `,
+            'footrace': `
+                <p>Circle the map a total of 3 times! Watch out for soul sand and warped stem! Make sure you stay up front, because the lead earns more points than everyone else!</p>
+                <p><strong>Tip:</strong> Keep your feet on the ground so that the effects of speed will still work (Don't jump!)</p>
+            `,
+            'spleef': `
+                <p>Everyone knows how to play Spleef! Swing your shovel at the dirt below your opponents and be the last one standing! The ground will slowly disintegrate so be careful!</p>
+                <p>This game will also be played 3 times in succession! There are powerups like snowballs that break blocks and swap players. There is also an auto shield that has a small chance of dropping that can block the player swapper.</p>
+            `,
+            'survival-games': `
+                <p>It's just Survival Games. When the game starts you will have 20 seconds of immunity after that you must race through the map to collect armor, weapons, and tools to carry you and your team to victory! Last team standing wins!</p>
+            `,
+            'parkour-pathway': `
+                <p>It's parkour, but with a stricter path... way. Get tournament points at each checkpoint, and even more if you make it to the end!</p>
+            `,
+            'clockwork': `
+                <p>A bell will ring X amount of times ranging from 1-12. Run to the corresponding granite platform and watch the others die. Things will speed up and get more difficult as time goes on, so be careful!</p>
+                <p><a href="https://youtu.be/WCzQCja0yOw" target="_blank" class="modal-link">Watch Gameplay Video (Credit: Xcla)</a></p>
+            `,
+            'farm-rush': `
+                <p>Collect items and sell them for points as quick as you can. First to the point max wins and any other items not sold when the max is hit will not be counted and the game will end. Use crop growers and animal growers to speed up cooldowns and timers.</p>
+                <p><a href="https://youtu.be/3zD9BHEu7ig" target="_blank" class="modal-link">Watch Tutorial Video</a></p>
+            `,
+            'colossal-combat': `
+                <p>The top two teams face off in the finale of the event. First team to 3 rounds won will win the entire event.</p>
+                <p><strong>Goal:</strong> Knock the opposing team off the platforms. The lava will rise throughout the round, making it harder to traverse the map.</p>
+                <p><strong>Kits:</strong></p>
+                <ul>
+                    <li><strong>Archer:</strong> Punch 1 bow, ability to punch opposition. Ammo: Arrows.</li>
+                    <li><strong>Skirmisher:</strong> Start with nothing, not able to punch. Ammo: Wind Charges.</li>
+                </ul>
+                <p>Kits receive ammo every couple of seconds. You can change your kit before every round. <strong>Tip:</strong> Wind charging the lower half of a player launches them high; the upper half sends them backwards.</p>
+            `
+        };
+
+        gameCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const gameKey = card.getAttribute('data-game');
+                if (descriptions[gameKey]) {
+                    modalTitle.textContent = card.querySelector('h2').textContent;
+                    modalDesc.innerHTML = descriptions[gameKey];
+                    
+                    const iconSrc = card.querySelector('.game-card-icon').src;
+                    modalIcon.src = iconSrc;
+                    modalIcon.alt = `${modalTitle.textContent} Icon`;
+                    
+                    galleryImages.forEach((img, index) => {
+                        img.src = `${gameKey}-${index + 1}.png`;
+                        img.alt = `${modalTitle.textContent} Screenshot ${index + 1}`;
+                    });
+
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        window.addEventListener('click', (event) => {
+            const playerModal = document.getElementById('player-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            if (event.target === playerModal) {
+                playerModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            if (event.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+
+        galleryImages.forEach(img => {
+            img.addEventListener('click', () => {
+                lightboxImg.src = img.src;
+                lightbox.classList.add('active');
+            });
+        });
+
+        closeLightbox.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+    }
+
+    function initTitleTypewriter() {
+        const fullTitle = "Challenger Trials";
+        let i = 0;
+        
+        function type() {
+            if (i <= fullTitle.length) {
+                document.title = fullTitle.substring(0, i) + (i < fullTitle.length ? "_" : "");
+                i++;
+                setTimeout(type, 150);
+            } else {
+                let blinks = 0;
+                const blinkInterval = setInterval(() => {
+                    document.title = fullTitle + (blinks % 2 === 0 ? " " : "_");
+                    blinks++;
+                    if (blinks > 5) {
+                        clearInterval(blinkInterval);
+                        document.title = fullTitle;
+                    }
+                }, 500);
+            }
+        }
+        
+        type();
+    }
+
+    function initTwitch() {
+        const host = window.location.hostname;
+        
+        if (!host) {
+            console.error("Twitch Embed Error: You must use a local web server (like Live Server) or host the site online. Twitch embeds do not work when opening HTML files directly.");
+            document.getElementById('twitch-embed').innerHTML = '<div style="color: white; padding: 20px; text-align: center;">Twitch embed requires a web server to function. Please run this through a local server or host it online.</div>';
+            return;
+        }
+
+        const parents = [host, "challengertrials.com", "www.challengertrials.com"];
+        if (host === "localhost" || host === "127.0.0.1") {
+            if (!parents.includes("localhost")) parents.push("localhost");
+            if (!parents.includes("127.0.0.1")) parents.push("127.0.0.1");
+        }
+        
+        twitchEmbed = new Twitch.Player("twitch-embed", {
+            width: "100%",
+            height: "100%",
+            channel: "challengertrials",
+            parent: parents
+        });
+    }
+
+    function initPlayers() {
+        const grid = document.getElementById('players-grid');
+        const modal = document.getElementById('player-modal');
+        const closeBtn = document.querySelector('.player-close-modal');
+        const searchInput = document.getElementById('player-search');
+
+        function displayPlayers(filteredPlayers) {
+            grid.innerHTML = '';
+            filteredPlayers.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.innerHTML = `
+                    <div class="player-card-inner">
+                        <img src="https://crafatar.com/avatars/${player.uuid}?size=128&overlay" alt="${player.name}" class="player-card-skin" onerror="this.src='https://minotar.net/helm/${player.uuid}/128'">
+                        <div class="player-card-info">
+                            <span class="player-card-name">${player.name}</span>
+                            <button class="stats-btn">Stats</button>
+                        </div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => showPlayerStats(player));
+                grid.appendChild(card);
+            });
+
+            if (filteredPlayers.length === 0) {
+                grid.innerHTML = '<p class="no-data" style="grid-column: 1/-1; font-size: 1.2rem; margin-top: 20px;">No players found matching your search.</p>';
+            }
+        }
+
+        // Initial display
+        displayPlayers(playerData);
+
+        // Search logic
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredPlayers = playerData.filter(player => 
+                player.name.toLowerCase().includes(searchTerm)
+            );
+            displayPlayers(filteredPlayers);
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        function showPlayerStats(player) {
+            document.getElementById('player-detail-name').textContent = player.name;
+            document.getElementById('player-detail-uuid').textContent = player.uuid;
+            
+            const detailSkin = document.getElementById('player-detail-skin');
+            detailSkin.src = `https://mc-heads.net/body/${player.uuid}/512`;
+            detailSkin.onerror = function() {
+                this.src = `https://crafatar.com/renders/body/${player.uuid}?size=512&overlay`;
+            };
+
+            document.getElementById('stat-won').textContent = player.won;
+            document.getElementById('stat-rank').textContent = player.rank;
+            document.getElementById('stat-avg').textContent = player.avg;
+            document.getElementById('stat-events').textContent = player.events;
+
+            const scoresList = document.getElementById('player-scores-list');
+            scoresList.innerHTML = '';
+            
+            if (player.scores.length === 0) {
+                scoresList.innerHTML = '<p class="no-data">No event history available yet.</p>';
+            } else {
+                player.scores.forEach((scoreEntry, index) => {
+                    const scoreItem = document.createElement('div');
+                    scoreItem.className = 'score-item';
+                    
+                    const eventName = scoreEntry.event || `Event ${index + 1}`;
+                    const scoreValue = scoreEntry.score !== undefined ? scoreEntry.score : scoreEntry;
+                    
+                    scoreItem.innerHTML = `
+                        <span class="event-name">${eventName}</span>
+                        <span class="event-score">${scoreValue.toLocaleString()}</span>
+                    `;
+                    scoresList.appendChild(scoreItem);
+                });
+            }
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function initPreviousEvents() {
+        const grid = document.getElementById('previous-events-list');
+        const modal = document.getElementById('event-modal');
+        const closeBtn = document.querySelector('.event-close-modal');
+        const detailTag = document.getElementById('event-detail-tag');
+        const detailTitle = document.getElementById('event-detail-title');
+        const detailInfo = document.getElementById('event-detail-full-info');
+
+        if (!grid) return;
+
+        const eventDataMap = {
+            3: {
+                tag: "Beta #3",
+                title: "Challenger Trials Beta 3",
+                description: "Pink Pilots take the crown in this intense Beta #3 event!",
+                winner: { name: "Pink Pilots", icon: "pink-pilots.png" },
+                games: [
+                    { name: "Spleef", icon: "spleef-icon.png" },
+                    { name: "Farm Rush", icon: "farmrush-icon.png" },
+                    { name: "Clockwork", icon: "clockwork-icon.png" },
+                    { name: "Parkour Pathway", icon: "parkour-icon.png" },
+                    { name: "Survival Games", icon: "survivalgames-icon.png" },
+                    { name: "Footrace", icon: "footrace-icon.png" },
+                    { name: "Capture the Flag", icon: "ctf-icon.png" },
+                    { name: "Finale", icon: "ct-crown.png" }
+                ],
+                teams: [
+                    { name: "Blue Beacons", color: "blue", icon: "blue-beacons.png", score: 20503, players: [
+                        { name: "DerGehasste", score: 1959 },
+                        { name: "Wo0o0o0ble_", score: 1761 },
+                        { name: "PizzaBuff", score: 1495 },
+                        { name: "zombreyy", score: 806 }
+                    ]},
+                    { name: "Pink Pilots", color: "pink", icon: "pink-pilots.png", score: 19282, players: [
+                        { name: "ThatzRed", score: 2093 },
+                        { name: "SpoonyTable", score: 2049 },
+                        { name: "ProfPie2000", score: 1949 },
+                        { name: "FishStride", score: 1742 }
+                    ]},
+                    { name: "Yellow Yetis", color: "yellow", icon: "yellow-yetis.png", score: 16850, players: [
+                        { name: "McHunt132", score: 2305 },
+                        { name: "CdogThePro", score: 1847 },
+                        { name: "Bluekwyrm", score: 1650 },
+                        { name: "LovefromNyxMC", score: 734 }
+                    ]},
+                    { name: "Cyan Cyclones", color: "cyan", icon: "cyan-cyclones.png", score: 16781, players: [
+                        { name: "HoodieDuck_", score: 2005 },
+                        { name: "Stehllar_", score: 1955 },
+                        { name: "PorcChrysus", score: 1773 },
+                        { name: "6ProUp4", score: 1126 }
+                    ]},
+                    { name: "Purple Pirates", color: "purple", icon: "purple-pirates.png", score: 16205, players: [
+                        { name: "Jokana_san", score: 1854 },
+                        { name: "FaZe_Bayern", score: 1788 },
+                        { name: "XclamationPoint", score: 1572 },
+                        { name: "pennycantread", score: 1468 }
+                    ]},
+                    { name: "Lime Lizards", color: "lime", icon: "lime-lizards.png", score: 16202, players: [
+                        { name: "Apples05", score: 2040 },
+                        { name: "Xpar17", score: 1594 },
+                        { name: "StarSnowLeopard", score: 1521 },
+                        { name: "WolfieLiam", score: 1211 }
+                    ]},
+                    { name: "Red Robots", color: "red", icon: "red-robots.png", score: 13495, players: [
+                        { name: "Skate8", score: 2123 },
+                        { name: "KubaBabilon", score: 1598 },
+                        { name: "CHALLY073763", score: 917 },
+                        { name: "_Butter_Boi_", score: 759 }
+                    ]},
+                    { name: "Orange Owls", color: "orange", icon: "orange-owls.png", score: 12907, players: [
+                        { name: "mintnhi", score: 2152 },
+                        { name: "RedTheCactus", score: 1449 },
+                        { name: "MrCakeness", score: 1406 },
+                        { name: "GeneralAlexMC", score: 1272 }
+                    ]}
+                ],
+                topPlayers: [
+                    { name: "McHunt132", score: 2305 },
+                    { name: "mintnhi", score: 2152 },
+                    { name: "Skate8", score: 2123 }
+                ]
+            },
+            1: {
+                tag: "Beta #1",
+                title: "Challenger Trials Beta 1",
+                description: "The FIRST Challenger Trials Beta event!",
+                winner: { name: "Blue Beacons", icon: "blue-beacons.png" },
+                games: [
+                    { name: "Clockwork", icon: "clockwork-icon.png" },
+                    { name: "Farm Rush", icon: "farmrush-icon.png" },
+                    { name: "Footrace", icon: "footrace-icon.png" },
+                    { name: "Parkour Pathway", icon: "parkour-icon.png" },
+                    { name: "Spleef", icon: "spleef-icon.png" },
+                    { name: "Survival Games", icon: "survivalgames-icon.png" },
+                    { name: "Capture the Flag", icon: "ctf-icon.png" },
+                    { name: "Finale", icon: "ct-crown.png" }
+                ],
+                teams: [
+                    { name: "Blue Beacons", color: "blue", icon: "blue-beacons.png", score: 25891, players: [
+                        { name: "madnes__", score: 1663 },
+                        { name: "nooobi", score: 2285 },
+                        { name: "Sacronix", score: 2980 },
+                        { name: "Snoae", score: 2243 }
+                    ]},
+                    { name: "Green Geese", color: "green", icon: "green-geese.png", score: 23114, players: [
+                        { name: "hiitzhunter", score: 2968 },
+                        { name: "SaltContent", score: 2572 },
+                        { name: "sandich", score: 1600 },
+                        { name: "Skate8", score: 2600 }
+                    ]},
+                    { name: "Cyan Cyclones", color: "cyan", icon: "cyan-cyclones.png", score: 20601, players: [
+                        { name: "Faistara", score: 2595 },
+                        { name: "g4vy", score: 1846 },
+                        { name: "itsnuku", score: 1829 },
+                        { name: "Kbelik", score: 1988 }
+                    ]},
+                    { name: "Orange Owls", color: "orange", icon: "orange-owls.png", score: 19695, players: [
+                        { name: "C12dawg", score: 1852 },
+                        { name: "QuartzIsCanon", score: 2237 },
+                        { name: "Wo0o0o0ble_", score: 2072 },
+                        { name: "WolfieLiam", score: 1759 }
+                    ]},
+                    { name: "Red Robots", color: "red", icon: "red-robots.png", score: 18614, players: [
+                        { name: "daneloldane", score: 1354 },
+                        { name: "Krumbld", score: 2257 },
+                        { name: "MiniBoru", score: 1502 },
+                        { name: "MrCakeness", score: 2310 }
+                    ]},
+                    { name: "Aqua Aliens", color: "aqua", icon: "aqua-aliens.png", score: 18578, players: [
+                        { name: "Chandiggitydog", score: 2286 },
+                        { name: "Ka1b23i", score: 974 },
+                        { name: "SpoonyTable", score: 2026 },
+                        { name: "TinyRiotx", score: 1482 }
+                    ]},
+                    { name: "Yellow Yetis", color: "yellow", icon: "yellow-yetis.png", score: 18517, players: [
+                        { name: "Ess4nce", score: 2124 },
+                        { name: "HoodieDuck_", score: 2204 },
+                        { name: "ItzChoco", score: 1887 },
+                        { name: "quizky", score: 1595 }
+                    ]},
+                    { name: "Pink Pilots", color: "pink", icon: "pink-pilots.png", score: 16079, players: [
+                        { name: "Percee_", score: 941 },
+                        { name: "PizzaBuff", score: 1815 },
+                        { name: "PorcChrysus", score: 2252 },
+                        { name: "ProfPie2000", score: 1832 }
+                    ]},
+                    { name: "Lime Lizards", color: "lime", icon: "lime-lizards.png", score: 15641, players: [
+                        { name: "DylanWMC", score: 1538 },
+                        { name: "McZeal", score: 1062 },
+                        { name: "Messyo", score: 2312 },
+                        { name: "xd_Bayern", score: 1774 }
+                    ]},
+                    { name: "Purple Pirates", color: "purple", icon: "purple-pirates.png", score: 10436, players: [
+                        { name: "CHALLY073763", score: 1130 },
+                        { name: "RedTheCactus", score: 983 },
+                        { name: "SlothRSR", score: 1161 },
+                        { name: "Stehllar_", score: 1873 }
+                    ]}
+                ],
+                topPlayers: [
+                    { name: "Sacronix", score: 2980 },
+                    { name: "hiitzhunter", score: 2968 },
+                    { name: "Skate8", score: 2600 }
+                ]
+            },
+            2: {
+                tag: "Beta #2",
+                title: "Challenger Trials Beta 2",
+                description: "The Aqua Aliens take the crown in this intense Beta #2 event!",
+                winner: { name: "Aqua Aliens", icon: "aqua-aliens.png" },
+                games: [
+                    { name: "Clockwork", icon: "clockwork-icon.png" },
+                    { name: "Farm Rush", icon: "farmrush-icon.png" },
+                    { name: "Survival Games", icon: "survivalgames-icon.png" },
+                    { name: "Spleef", icon: "spleef-icon.png" },
+                    { name: "Footrace", icon: "footrace-icon.png" },
+                    { name: "Parkour Pathway", icon: "parkour-icon.png" },
+                    { name: "Capture the Flag", icon: "ctf-icon.png" },
+                    { name: "Finale", icon: "ct-crown.png" }
+                ],
+                teams: [
+                    { name: "Aqua Aliens", color: "aqua", icon: "aqua-aliens.png", score: 27019, players: [
+                        { name: "EvilBuggyJman", score: 2349 },
+                        { name: "GGgamer73", score: 2289 },
+                        { name: "Wo0o0o0ble_", score: 2265 },
+                        { name: "vKairos", score: 2002 }
+                    ]},
+                    { name: "Red Robots", color: "red", icon: "red-robots.png", score: 22044, players: [
+                        { name: "BroWo9", score: 2666 },
+                        { name: "CHALLY073763", score: 1462 },
+                        { name: "HoodieDuck_", score: 2933 },
+                        { name: "KatsExistance", score: 2235 }
+                    ]},
+                    { name: "Pink Pilots", color: "pink", icon: "pink-pilots.png", score: 21786, players: [
+                        { name: "CxrtxR", score: 2991 },
+                        { name: "DerGehasste", score: 1823 },
+                        { name: "itsnuku", score: 1812 },
+                        { name: "madnes__", score: 1980 }
+                    ]},
+                    { name: "Yellow Yetis", color: "yellow", icon: "yellow-yetis.png", score: 20818, players: [
+                        { name: "Apples05", score: 1832 },
+                        { name: "WolfieLiam", score: 1711 },
+                        { name: "ekvyn", score: 1660 },
+                        { name: "hgsmallz", score: 2168 }
+                    ]},
+                    { name: "Cyan Cyclones", color: "cyan", icon: "cyan-cyclones.png", score: 20482, players: [
+                        { name: "Sacronix", score: 2916 },
+                        { name: "VelvetAshes", score: 2745 },
+                        { name: "_Butter_Boi_", score: 1135 },
+                        { name: "quizky", score: 2063 }
+                    ]},
+                    { name: "Purple Pirates", color: "purple", icon: "purple-pirates.png", score: 17971, players: [
+                        { name: "Chandiggitydog", score: 2210 },
+                        { name: "PorcChrysus", score: 2001 },
+                        { name: "ThatzRed", score: 1958 },
+                        { name: "victoriaskye", score: 1344 }
+                    ]},
+                    { name: "Green Geese", color: "green", icon: "green-geese.png", score: 16918, players: [
+                        { name: "GeneralAlexMC", score: 959 },
+                        { name: "ImElz", score: 1800 },
+                        { name: "Redd2", score: 1867 },
+                        { name: "sturmcheese", score: 1671 }
+                    ]},
+                    { name: "Orange Owls", color: "orange", icon: "orange-owls.png", score: 14847, players: [
+                        { name: "Ess4nce", score: 1889 },
+                        { name: "TinyRiotx", score: 1710 },
+                        { name: "geeyeah", score: 641 },
+                        { name: "xd_Bayern", score: 1553 }
+                    ]},
+                    { name: "Lime Lizards", color: "lime", icon: "lime-lizards.png", score: 14400, players: [
+                        { name: "6ProUp4", score: 1013 },
+                        { name: "McHunt132", score: 2350 },
+                        { name: "McZeal", score: 1277 },
+                        { name: "pennycantread", score: 1621 }
+                    ]},
+                    { name: "Blue Beacons", color: "blue", icon: "blue-beacons.png", score: 14190, players: [
+                        { name: "GD_Balun123", score: 693 },
+                        { name: "ItsNitroTiger_", score: 1918 },
+                        { name: "SpoonyTable", score: 2146 },
+                        { name: "Xpar17", score: 1544 }
+                    ]}
+                ],
+                topPlayers: [
+                    { name: "CxrtxR", score: 2991 },
+                    { name: "HoodieDuck_", score: 2933 },
+                    { name: "Sacronix", score: 2916 }
+                ]
+            },
+            4: {
+                tag: "CT 4B",
+                title: "Challenger Trials CT 4B",
+                description: "Purple Pirates dominate in CT 4B!",
+                winner: { name: "Purple Pirates", icon: "purple-pirates.png" },
+                games: [
+                    { name: "Clockwork", icon: "clockwork-icon.png" },
+                    { name: "Farm Rush", icon: "farmrush-icon.png" },
+                    { name: "Spleef", icon: "spleef-icon.png" },
+                    { name: "Footrace", icon: "footrace-icon.png" },
+                    { name: "Parkour Pathway", icon: "parkour-icon.png" },
+                    { name: "Survival Games", icon: "survivalgames-icon.png" },
+                    { name: "Capture the Flag", icon: "ctf-icon.png" }
+                ],
+                teams: [
+                    { name: "Purple Pirates", color: "purple", icon: "purple-pirates.png", score: 23122, players: [
+                        { name: "ProfPie2000", score: 3407 },
+                        { name: "Konzid", score: 2914 },
+                        { name: "egguv", score: 2427 },
+                        { name: "SlothRSR", score: 1675 }
+                    ]},
+                    { name: "Blue Beacons", color: "blue", icon: "blue-beacons.png", score: 21711, players: [
+                        { name: "SouperLucky_", score: 2708 },
+                        { name: "SpoonyTable", score: 2650 },
+                        { name: "Wo0o0o0ble_", score: 2340 },
+                        { name: "zombreyy", score: 1441 }
+                    ]},
+                    { name: "Pink Pilots", color: "pink", icon: "pink-pilots.png", score: 21053, players: [
+                        { name: "ThatzRed", score: 2930 },
+                        { name: "DerGehasste", score: 2885 },
+                        { name: "FishStride", score: 2557 },
+                        { name: "CHALLY073763", score: 1756 }
+                    ]},
+                    { name: "Cyan Cyclones", color: "cyan", icon: "cyan-cyclones.png", score: 19327, players: [
+                        { name: "BoboRozo", score: 2583 },
+                        { name: "avologi", score: 2311 },
+                        { name: "De3J", score: 2204 },
+                        { name: "McZeal", score: 1676 }
+                    ]},
+                    { name: "Aqua Aliens", color: "aqua", icon: "aqua-aliens.png", score: 19019, players: [
+                        { name: "HoodieDuck_", score: 3258 },
+                        { name: "FaZe_Bayern", score: 2324 },
+                        { name: "S0ssy", score: 1969 },
+                        { name: "DylanWMC", score: 1937 }
+                    ]},
+                    { name: "Orange Owls", color: "orange", icon: "orange-owls.png", score: 18518, players: [
+                        { name: "Snoae", score: 2988 },
+                        { name: "MrCakeness", score: 2445 },
+                        { name: "Krumbld", score: 1823 },
+                        { name: "GeneralAlexMC", score: 1375 }
+                    ]},
+                    { name: "Red Robots", color: "red", icon: "red-robots.png", score: 16095, players: [
+                        { name: "TSM_Fire", score: 2686 },
+                        { name: "SimplyAlexiss", score: 2068 },
+                        { name: "Bluekwyrm", score: 1478 },
+                        { name: "GD_Balun123", score: 665 }
+                    ]},
+                    { name: "Yellow Yetis", color: "yellow", icon: "yellow-yetis.png", score: 14485, players: [
+                        { name: "itsnuku", score: 1847 },
+                        { name: "star_ish", score: 1740 },
+                        { name: "Swifyz", score: 1426 },
+                        { name: "MineyLO", score: 1107 }
+                    ]},
+                    { name: "Lime Lizards", color: "lime", icon: "lime-lizards.png", score: 14471, players: [
+                        { name: "Skate8", score: 2558 },
+                        { name: "NotHydra_", score: 1643 },
+                        { name: "only_chance", score: 1624 },
+                        { name: "Skwishywishy", score: 1080 }
+                    ]},
+                    { name: "Green Geese", color: "green", icon: "green-geese.png", score: 13662, players: [
+                        { name: "mintnhi", score: 2401 },
+                        { name: "pennycantread", score: 2079 },
+                        { name: "slushydealer", score: 2044 },
+                        { name: "BlueBen8", score: 937 }
+                    ]}
+                ],
+                topPlayers: [
+                    { name: "HoodieDuck_", score: 3258 },
+                    { name: "ProfPie2000", score: 3407 },
+                    { name: "Snoae", score: 2988 }
+                ]
+            }
+        };
+
+        for (let i = 4; i >= 1; i--) {
+            let eventData;
+            
+            if (eventDataMap[i]) {
+                eventData = eventDataMap[i];
+                eventData.id = i;
+            } else {
+                eventData = {
+                    id: i,
+                    tag: `Beta #${i}`,
+                    title: `Challenger Trials Beta ${i}`,
+                    description: "Event information coming soon! Stay tuned for actual results and standings.",
+                    placeholder: true
+                };
+            }
+
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            
+            let winnerInfo = '<span>Details coming soon...</span>';
+            if (eventData.winner) {
+                winnerInfo = `
+                    <img src="${eventData.winner.icon}" alt="${eventData.winner.name}" class="winner-icon">
+                    <span>Winner: ${eventData.winner.name}</span>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="event-card-header">
+                    <div class="event-info">
+                        <span class="event-tag">${eventData.tag}</span>
+                        <h3 class="event-title">${eventData.title}</h3>
+                    </div>
+                    <div class="event-winner-brief">
+                        ${winnerInfo}
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                detailTag.textContent = eventData.tag;
+                detailTitle.textContent = eventData.title;
+                
+                if (eventData.placeholder) {
+                    detailInfo.innerHTML = `
+                        <div class="event-detail-grid">
+                            <div class="event-detail-section">
+                                <h3><span class="icon">🏆</span> Top Teams</h3>
+                                <p>Data will be updated shortly.</p>
+                            </div>
+                            <div class="event-detail-section">
+                                <h3><span class="icon">👤</span> Top Players</h3>
+                                <p>Data will be updated shortly.</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    let teamStandingsHtml = eventData.teams.map((team, idx) => `
+                        <div class="mini-standing-row">
+                            <span class="rank">${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}</span>
+                            <div class="team-name color-${team.color}">
+                                <img src="${team.icon}" alt="${team.name}" class="mini-team-icon">
+                                <span>${team.name}</span>
+                            </div>
+                            <span class="points">${team.score.toLocaleString()}</span>
+                        </div>
+                    `).join('');
+
+                    let topPlayersHtml = eventData.topPlayers.map((player, idx) => `
+                        <div class="mini-indiv-row">
+                            <span class="rank">${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}</span>
+                            <span class="player-name ${player.name.length > 12 ? 'long-name' : ''}">${player.name}</span>
+                            <span class="points">${player.score.toLocaleString()}</span>
+                        </div>
+                    `).join('');
+
+                    let fullStandingsHtml = eventData.teams.map(team => {
+                        const playerHtml = team.players.map(p => {
+                            const pData = playerData.find(pd => pd.name.toLowerCase() === p.name.toLowerCase());
+                            const uuid = pData ? pData.uuid : 'steve';
+                            const faceUrl = `https://mc-heads.net/avatar/${uuid}/32`;
+                            return `
+                                <div class="player-score-item">
+                                    <div class="player-name-face">
+                                        <img src="${faceUrl}" alt="${p.name}" class="mini-player-face" onerror="this.src='https://mc-heads.net/avatar/steve/32'">
+                                        <span class="${p.name.length > 12 ? 'long-name' : ''}">${p.name}</span>
+                                    </div>
+                                    <strong>${p.score.toLocaleString()}</strong>
+                                </div>
+                            `;
+                        }).join('');
+
+                        return `
+                            <div class="event-detail-section">
+                                <h3 class="team-header-with-icon">
+                                    <img src="${team.icon}" alt="${team.name}" class="mini-team-icon-header">
+                                    <span>${team.name} - ${team.score.toLocaleString()}</span>
+                                </h3>
+                                <div class="player-score-grid">
+                                    ${playerHtml}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    let gamesHtml = "";
+                    if (eventData.games) {
+                        gamesHtml = eventData.games.map((game, idx) => `
+                            <div class="game-icon-wrapper" data-game-name="${game.name}"><img src="${game.icon}" alt="${game.name}"></div>
+                            ${idx < eventData.games.length - 1 ? '<div class="game-icon-wrapper arrow">→</div>' : ''}
+                        `).join('');
+                    }
+
+                    detailInfo.innerHTML = `
+                        <div class="event-detail-section">
+                            <h3><span class="icon">🎮</span> Games Played</h3>
+                            <div class="games-sequence">
+                                ${gamesHtml}
+                            </div>
+                        </div>
+                        <div class="event-detail-grid">
+                            <div class="event-detail-section">
+                                <h3><span class="icon">🏆</span> Team Standings</h3>
+                                <div class="mini-standings-list">
+                                    ${teamStandingsHtml}
+                                </div>
+                            </div>
+                            <div class="event-detail-section">
+                                <h3><span class="icon">👤</span> Individual Top 3</h3>
+                                <div class="mini-indiv-list">
+                                    ${topPlayersHtml}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-full-standings">
+                            <h3><span class="icon">📊</span> Detailed Standings</h3>
+                            <div class="full-standings-grid">
+                                ${fullStandingsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+
+            grid.appendChild(card);
+        }
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+    }
+
+    async function updateLiveStandings() {
+        const API_URL = 'https://determined-kore-challengertrials-f861d4c5.koyeb.app/teams';
+        const grid = document.querySelector('.teams-grid');
+        if (!grid) return;
+        
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('API request failed');
+            
+            const data = await response.json();
+            
+            data.sort((a, b) => b.total_score - a.total_score);
+            
+            data.forEach((team, index) => {
+                const teamCard = document.querySelector(`.team-card-score.team-${team.team_id}`);
+                
+                if (teamCard) {
+                    const oldCrown = teamCard.querySelector('.team-crown');
+                    if (oldCrown) oldCrown.remove();
+
+                    if (team.winner || team.is_winner || (team.team_id === 'blue' && team.total_score === 9171)) {
+                        const crown = document.createElement('img');
+                        crown.src = 'ct-crown.png';
+                        crown.className = 'team-crown';
+                        crown.alt = 'Champion Crown';
+                        teamCard.prepend(crown);
+                    }
+
+                    teamCard.querySelector('.score-main').textContent = team.total_score.toLocaleString();
+                    
+                    const playerList = teamCard.querySelector('.player-list');
+                    if (playerList && team.players) {
+                        playerList.innerHTML = team.players.map(p => {
+                            const pData = playerData.find(pd => pd.name.toLowerCase() === p.name.toLowerCase());
+                            const uuid = p.uuid || (pData ? pData.uuid : 'steve');
+                            const faceUrl = `https://mc-heads.net/avatar/${uuid}/24`;
+                            return `
+                                <div class="live-player-row">
+                                    <img src="${faceUrl}" alt="${p.name}" class="live-player-face" onerror="this.src='https://mc-heads.net/avatar/steve/24'">
+                                    <span class="${p.name.length > 12 ? 'long-name' : ''}">${p.name}: ${p.score.toLocaleString()}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+
+                    grid.appendChild(teamCard);
+                }
+            });
+        } catch (error) {
+            console.warn('Live standings API error or not available. Sorting existing cards by static scores.');
+            
+            const cards = Array.from(grid.querySelectorAll('.team-card-score'));
+            cards.sort((a, b) => {
+                const scoreA = parseInt(a.querySelector('.score-main').textContent.replace(/,/g, '')) || 0;
+                const scoreB = parseInt(b.querySelector('.score-main').textContent.replace(/,/g, '')) || 0;
+                return scoreB - scoreA;
+            });
+
+            cards.forEach((card, index) => {
+                const oldCrown = card.querySelector('.team-crown');
+                if (oldCrown) oldCrown.remove();
+
+                const teamName = card.querySelector('h3').textContent;
+                if (teamName === "Pink Pilots") {
+                    const crown = document.createElement('img');
+                    crown.src = 'ct-crown.png';
+                    crown.className = 'team-crown';
+                    crown.alt = 'Champion Crown';
+                    card.prepend(crown);
+                }
+
+                const playerList = card.querySelector('.player-list');
+                if (playerList) {
+                    const players = Array.from(playerList.querySelectorAll('p, .live-player-row'));
+                    playerList.innerHTML = players.map(pElement => {
+                        const text = pElement.textContent;
+                        let name, score;
+                        if (text.includes(':')) {
+                            [name, score] = text.split(':').map(s => s.trim());
+                        } else {
+                            name = text.trim();
+                            score = null;
+                        }
+                        
+                        const pData = playerData.find(pd => pd.name.toLowerCase() === name.toLowerCase());
+                        const uuid = pData ? pData.uuid : 'steve';
+                        const faceUrl = `https://mc-heads.net/avatar/${uuid}/24`;
+                        return `
+                            <div class="live-player-row">
+                                <img src="${faceUrl}" alt="${name}" class="live-player-face" onerror="this.src='https://mc-heads.net/avatar/steve/24'">
+                                <span class="${name.length > 12 ? 'long-name' : ''}">${name}${score ? ': ' + score : ''}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                grid.appendChild(card);
+            });
+        }
+    }
+});

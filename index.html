@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenger Trials</title>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <meta property="og:title" content="Challenger Trials">
+    <meta property="og:site_name" content="Challenger Trials">
+    <meta property="og:description" content="Official website for the Challenger Trials Minecraft event.">
+    <meta property="og:image" content="https://challengertrials.com/embed-preview.png">
+    <meta property="og:url" content="https://challengertrials.com">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#5a0001">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@ChallengerTrial">
+    <meta name="twitter:title" content="Challenger Trials">
+    <meta name="twitter:description" content="Official website for the Challenger Trials Minecraft event.">
+    <meta name="twitter:image" content="https://challengertrials.com/embed-preview.png">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body class="loading">
+    <div id="page-transition" class="page-transition">
+        <div class="transition-bg"></div>
+        <div class="action-lines"></div>
+        <img src="ct_ct.png" alt="CT" class="transition-logo">
+    </div>
+    <header>
+        <div class="header-background"></div>
+        <button id="animation-toggle" class="animation-toggle">Animations: ON</button>
+        <div class="container header-content">
+            <img src="ct_fulltext.png" alt="Challenger Trials" class="main-logo">
+            <p class="header-subtitle">A Minecraft event for content creators of all size.</p>
+            <nav>
+                <button class="nav-link active" data-tab="home">Home</button>
+                <button class="nav-link" data-tab="games">Games</button>
+                <button class="nav-link" data-tab="players">Players</button>
+                <button class="nav-link" data-tab="applications">Applications</button>
+                <button class="nav-link" data-tab="live">Live</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="tab-content active">
+            <div class="container">
+                <div class="home-grid">
+                    <div class="home-main-card">
+                        <h2 class="section-title">Welcome to Challenger Trials</h2>
+                        <p>Challenger Trials is a  Minecraft event  designed for content creators of all sizes to showcase their skills, collaborate, and compete in a series of unique, minigames!</p>
+
+                        <div class="home-actions">
+                            <a href="https://discord.gg/aZtTceXgFK" target="_blank" class="cta-button discord-btn">Join our Discord</a>
+                            <a href="#" class="cta-button secondary-btn" data-tab-switch="games">Explore Games</a>
+                        </div>
+                    </div>
+
+                    <div class="info-sidebar">
+                        <div class="info-box">
+                            <h3>Quick Links</h3>
+                            <ul class="quick-links">
+                                <li><a href="https://discord.gg/aZtTceXgFK" target="_blank">Official Discord</a></li>
+                                <li><a href="https://twitter.com/ChallengerTrial" target="_blank">Follow us on Twitter</a></li>
+                                <li><a href="https://twitch.tv/challengertrials" target="_blank">Watch on Twitch</a></li>
+                                <li><a href="https://www.youtube.com/@ChallengerTrials" target="_blank">Subscribe on YouTube</a></li>
+                            </ul>
+                        </div>
+                        <div class="info-box">
+                            <h3>Navigation Guide</h3>
+                            <ul class="nav-guide">
+                                <li><strong>Games:</strong> View detailed info and videos of all tournament games.</li>
+                                <li><strong>Players:</strong> See the full list of participants for the current event.</li>
+                                <li><strong>Live:</strong> Watch the event live and track real-time team standings.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="games" class="tab-content">
+            <div class="container">
+                <h2 class="section-title">Tournament Games</h2>
+                <div class="games-grid">
+                    <div class="game-card" data-game="clockwork">
+                        <div class="game-card-bg" style="background-image: url('clockwork-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="clockwork-icon.png" alt="Clockwork Icon" class="game-card-icon">
+                            <h2>Clockwork</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="footrace">
+                        <div class="game-card-bg" style="background-image: url('footrace-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="footrace-icon.png" alt="Footrace Icon" class="game-card-icon">
+                            <h2>Footrace</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="survival-games">
+                        <div class="game-card-bg" style="background-image: url('survival-games-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="survivalgames-icon.png" alt="Survival Games Icon" class="game-card-icon">
+                            <h2>Survival Games</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="farm-rush">
+                        <div class="game-card-bg" style="background-image: url('farm-rush-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="farmrush-icon.png" alt="Farm Rush Icon" class="game-card-icon">
+                            <h2>Farm Rush</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="spleef">
+                        <div class="game-card-bg" style="background-image: url('spleef-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="spleef-icon.png" alt="Spleef Icon" class="game-card-icon">
+                            <h2>Spleef</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="parkour-pathway">
+                        <div class="game-card-bg" style="background-image: url('parkour-pathway-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="parkour-icon.png" alt="Parkour Pathway Icon" class="game-card-icon">
+                            <h2>Parkour Pathway</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="capture-the-flag">
+                        <div class="game-card-bg" style="background-image: url('capture-the-flag-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="ctf-icon.png" alt="Capture the Flag Icon" class="game-card-icon">
+                            <h2>Capture the Flag</h2>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="colossal-combat">
+                        <div class="game-card-bg" style="background-image: url('colossal-combat-1.png');"></div>
+                        <div class="game-card-content">
+                            <img src="ct-crown.png" alt="Colossal Combat Icon" class="game-card-icon">
+                            <h2>Colossal Combat</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="game-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <div class="modal-header">
+                    <img id="modal-icon" src="" alt="Game Icon" class="modal-game-icon">
+                    <h2 id="modal-title">Game Title</h2>
+                </div>
+                <div id="modal-description"></div>
+                <div class="game-gallery">
+                    <img src="" alt="Screenshot 1" class="gallery-img">
+                    <img src="" alt="Screenshot 2" class="gallery-img">
+                    <img src="" alt="Screenshot 3" class="gallery-img">
+                    <img src="" alt="Screenshot 4" class="gallery-img">
+                </div>
+            </div>
+        </div>
+
+        <div id="player-modal" class="modal">
+            <div class="modal-content player-modal-content">
+                <span class="close-modal player-close-modal">&times;</span>
+                <div class="player-detail-header">
+                    <img id="player-detail-skin" src="" alt="Player Skin" class="player-detail-skin">
+                    <div class="player-detail-title">
+                        <h2 id="player-detail-name">Player Name</h2>
+                        <p id="player-detail-uuid" class="uuid-text"></p>
+                    </div>
+                </div>
+                <div class="player-stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Events Won</span>
+                        <span id="stat-won" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Percent Rank</span>
+                        <span id="stat-rank" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Score</span>
+                        <span id="stat-avg" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Events</span>
+                        <span id="stat-events" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="player-history">
+                    <h3>Event History</h3>
+                    <div id="player-scores-list" class="scores-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="event-modal" class="modal">
+            <div class="modal-content event-modal-content">
+                <span class="close-modal event-close-modal">&times;</span>
+                <div class="event-detail-header">
+                    <span id="event-detail-tag" class="event-tag">Event #1</span>
+                    <h2 id="event-detail-title">Event Title</h2>
+                </div>
+                <div id="event-detail-full-info">
+                </div>
+            </div>
+        </div>
+
+        <div id="lightbox" class="lightbox">
+            <span class="close-lightbox">&times;</span>
+            <img class="lightbox-img" id="lightbox-img">
+        </div>
+
+        <section id="players" class="tab-content">
+            <div class="container">
+                <h2 class="section-title">Event Players</h2>
+                <div class="search-container">
+                    <input type="text" id="player-search" placeholder="Search for a player..." class="player-search-input">
+                </div>
+                <div id="players-grid" class="players-grid">
+                </div>
+            </div>
+        </section>
+
+        <section id="applications" class="tab-content">
+            <div class="container">
+                <h2 class="section-title">Join the Team</h2>
+                <p class="section-intro">We're always looking for talented people to help make Challenger Trials even better. If you've got the skills and the passion, pick a role below and show us what you can do.</p>
+
+                <div class="apps-grid">
+                    <div class="app-card">
+                        <h3>Developer</h3>
+                        <p>Help us build and maintain the custom plugins and systems that make our events possible! We're looking for people who know their way around Java and the Spigot/Paper API.</p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScZGC3tw32xAcsnZ5eUsvDpp0rRX-BlhOqSnHbxebmwgDO48Q/viewform?usp=dialog" target="_blank" class="cta-button secondary-btn">Apply Now</a>
+                    </div>
+
+                    <div class="app-card">
+                        <h3>Builder</h3>
+                        <p>Our events need amazing maps. If you've got an eye for detail and can create environments that look great and play even better, we want to see your portfolio.</p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScr57Cdlj2AVZ05MP1RjpLlVz-idgfh43psRxy8AhvLppTOGg/viewform?usp=header" target="_blank" class="cta-button secondary-btn">Apply Now</a>
+                    </div>
+
+                    <div class="app-card">
+                        <h3>Playtester</h3>
+                        <p>Before a game goes live, it needs to be broken. Join our playtesting team to help us balance mechanics, find bugs, and ensure every game is as fun as possible.</p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfJHGgKlgRbHWshF9jl5efJFOmyajWp_XE2CtF3CV1dqkarSw/viewform?usp=sf_link" target="_blank" class="cta-button secondary-btn">Apply Now</a>
+                    </div>
+
+                    <div class="app-card">
+                        <h3>Photographer</h3>
+                        <p>Apply to be a photographer for the Challenger Trials staff team, you will take photos during the event to be posted on the official CT x and bsky pages.</p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScI5k2rgCkKwwMeFrn_B6EfZCCyOUKJKGL874b20A4rPk9Chw/viewform?usp=header" target="_blank" class="cta-button secondary-btn">Apply Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="live" class="tab-content">
+            <div class="container">
+                <div class="stream-container">
+                    <div id="twitch-embed"></div>
+                </div>
+
+                <div class="team-scores-section">
+                    <h2 class="section-title">Team Standings</h2>
+                    <div class="teams-grid">
+                        <div class="team-card-score team-purple">
+                            <img src="ct-crown.png" alt="Champion Crown" class="team-crown">
+                            <img src="purple-pirates.png" alt="Purple Pirates" class="team-icon">
+                            <h3>Purple Pirates</h3>
+                            <div class="score-main">23,122</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/a5bb148c-a8c9-4e7c-8087-918e8585bb31/24" alt="ProfPie2000" class="live-player-face">
+                                    <span>ProfPie2000: 3,407</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-dddd-eeee-ffff/24" alt="Konzid" class="live-player-face">
+                                    <span>Konzid: 2,914</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-eeee-ffff-0000/24" alt="egguv" class="live-player-face">
+                                    <span>egguv: 2,427</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/6d95aab5-ceb2-436a-a987-157310386a5e/24" alt="SlothRSR" class="live-player-face">
+                                    <span>SlothRSR: 1,675</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-blue">
+                            <img src="blue-beacons.png" alt="Blue Beacons" class="team-icon">
+                            <h3>Blue Beacons</h3>
+                            <div class="score-main">21,711</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-cccc-dddd-eeee/24" alt="SouperLucky_" class="live-player-face">
+                                    <span>SouperLucky_: 2,708</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/ef81ccca-1298-4c1b-9853-a465fb7814ea/24" alt="SpoonyTable" class="live-player-face">
+                                    <span>SpoonyTable: 2,650</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/d784322d-cc56-4c73-9385-5a92781816ff/24" alt="Wo0o0o0ble_" class="live-player-face">
+                                    <span>Wo0o0o0ble_: 2,340</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/fa2c598c-9945-4542-9b2d-a43fbb6f8118/24" alt="zombreyy" class="live-player-face">
+                                    <span>zombreyy: 1,441</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-pink">
+                            <img src="pink-pilots.png" alt="Pink Pilots" class="team-icon">
+                            <h3>Pink Pilots</h3>
+                            <div class="score-main">21,053</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/acf7d5c3-243b-4ebc-8df8-36efe88df27b/24" alt="ThatzRed" class="live-player-face">
+                                    <span>ThatzRed: 2,930</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/f9b38fa4-a822-4324-8f73-372ff1ead132/24" alt="DerGehasste" class="live-player-face">
+                                    <span>DerGehasste: 2,885</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/95f30e62-1bfb-4191-a096-6fd4150d6cd4/24" alt="FishStride" class="live-player-face">
+                                    <span>FishStride: 2,557</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/6d10a911-f7a8-4fdd-a8d4-0a2ebcc5f940/24" alt="CHALLY073763" class="live-player-face">
+                                    <span>CHALLY073763: 1,756</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-cyan">
+                            <img src="cyan-cyclones.png" alt="Cyan Cyclones" class="team-icon">
+                            <h3>Cyan Cyclones</h3>
+                            <div class="score-main">19,327</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-9999-aaaa-bbbb/24" alt="BoboRozo" class="live-player-face">
+                                    <span>BoboRozo: 2,583</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-aaaa-bbbb-cccc/24" alt="avologi" class="live-player-face">
+                                    <span>avologi: 2,311</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-bbbb-cccc-dddd/24" alt="De3J" class="live-player-face">
+                                    <span>De3J: 2,204</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/1c387a07-ebb2-46f9-a9f2-48845133bba3/24" alt="McZeal" class="live-player-face">
+                                    <span>McZeal: 1,676</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-aqua">
+                            <img src="aqua-aliens.png" alt="Aqua Aliens" class="team-icon">
+                            <h3>Aqua Aliens</h3>
+                            <div class="score-main">19,019</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/621fb56a-c6e7-43e4-8dd5-c09ec4b8fc7e/24" alt="HoodieDuck_" class="live-player-face">
+                                    <span>HoodieDuck_: 3,258</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/a337611d-215d-4f96-b907-51c55f0de636/24" alt="FaZe_Bayern" class="live-player-face">
+                                    <span>FaZe_Bayern: 2,324</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-ffff-0000-1111/24" alt="S0ssy" class="live-player-face">
+                                    <span>S0ssy: 1,969</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/1aca0a69-01f8-4636-9fe9-2154bddc81ed/24" alt="DylanWMC" class="live-player-face">
+                                    <span>DylanWMC: 1,937</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-orange">
+                            <img src="orange-owls.png" alt="Orange Owls" class="team-icon">
+                            <h3>Orange Owls</h3>
+                            <div class="score-main">18,518</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/244641c7-b85e-4bc3-86c1-4117991a7d86/24" alt="Snoae" class="live-player-face">
+                                    <span>Snoae: 2,988</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/3f864c67-148a-4154-9943-beec3d1eead0/24" alt="MrCakeness" class="live-player-face">
+                                    <span>MrCakeness: 2,445</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/89189518-1d3c-4f81-a6a7-dfc52ce3a9c1/24" alt="Krumbld" class="live-player-face">
+                                    <span>Krumbld: 1,823</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/87bbcfe2-66b6-40fd-9043-150c6e8180c7/24" alt="GeneralAlexMC" class="live-player-face">
+                                    <span>GeneralAlexMC: 1,375</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-red">
+                            <img src="red-robots.png" alt="Red Robots" class="team-icon">
+                            <h3>Red Robots</h3>
+                            <div class="score-main">16,095</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-1111-2222-3333/24" alt="TSM_Fire" class="live-player-face">
+                                    <span>TSM_Fire: 2,686</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-2222-3333-4444/24" alt="SimplyAlexiss" class="live-player-face">
+                                    <span>SimplyAlexiss: 2,068</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/fedb60d7-ecb9-4c74-8630-c95aa1692b7d/24" alt="Bluekwyrm" class="live-player-face">
+                                    <span>Bluekwyrm: 1,478</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/06dd05bb-a47a-433d-9f16-f0153039e586/24" alt="GD_Balun123" class="live-player-face">
+                                    <span>GD_Balun123: 665</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-yellow">
+                            <img src="yellow-yetis.png" alt="Yellow Yetis" class="team-icon">
+                            <h3>Yellow Yetis</h3>
+                            <div class="score-main">14,485</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/19599633-6270-4727-9108-7cfdf9b500d3/24" alt="itsnuku" class="live-player-face">
+                                    <span>itsnuku: 1,847</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-3333-4444-5555/24" alt="star_ish" class="live-player-face">
+                                    <span>star_ish: 1,740</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/21f2c80b-9aee-47bc-838b-d8c480064091/24" alt="Swifyz" class="live-player-face">
+                                    <span>Swifyz: 1,426</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-4444-5555-6666/24" alt="MineyLO" class="live-player-face">
+                                    <span>MineyLO: 1,107</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-lime">
+                            <img src="lime-lizards.png" alt="Lime Lizards" class="team-icon">
+                            <h3>Lime Lizards</h3>
+                            <div class="score-main">14,471</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/ffa160a0-a3a8-4896-9bf9-05c2a76b678d/24" alt="Skate8" class="live-player-face">
+                                    <span>Skate8: 2,558</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-5555-6666-7777/24" alt="NotHydra_" class="live-player-face">
+                                    <span>NotHydra_: 1,643</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-6666-7777-8888/24" alt="only_chance" class="live-player-face">
+                                    <span>only_chance: 1,624</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-7777-8888-9999/24" alt="Skwishywishy" class="live-player-face">
+                                    <span>Skwishywishy: 1,080</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-card-score team-green">
+                            <img src="green-geese.png" alt="Green Geese" class="team-icon">
+                            <h3>Green Geese</h3>
+                            <div class="score-main">13,662</div>
+                            <div class="player-list">
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/08c656b3-e9ac-44a8-8374-93308a549421/24" alt="mintnhi" class="live-player-face">
+                                    <span>mintnhi: 2,401</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/3bf6cdc2-3ce4-4a80-90a1-91776b5bbff7/24" alt="pennycantread" class="live-player-face">
+                                    <span>pennycantread: 2,079</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/0000-8888-9999-aaaa/24" alt="slushydealer" class="live-player-face">
+                                    <span>slushydealer: 2,044</span>
+                                </div>
+                                <div class="live-player-row">
+                                    <img src="https://mc-heads.net/avatar/6e3ef915-92b3-41ec-9570-ffe91cbdce72/24" alt="BlueBen8" class="live-player-face">
+                                    <span>BlueBen8: 937</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="previous-events-section">
+                    <h2 class="section-title">Previous Events</h2>
+                    <div id="previous-events-list" class="events-list">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Challenger Trials is an event created by SgtShotgun</p>
+        </div>
+    </footer>
+
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+    <script src="players.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
